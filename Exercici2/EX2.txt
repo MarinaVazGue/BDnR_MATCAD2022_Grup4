@@ -1,0 +1,58 @@
+1) Del padró de 1866 de Castellví de Rosanes (CR), retorna el número d'habitants i la llista de noms.
+   Elimina duplicats i nan.
+
+	MATCH (h:Habitatge)-[:VIU]-(p:Individu)
+	WHERE h.Any_Padro = 1866 AND h.Municipi = "CR" AND p.name <> "nan"
+	RETURN count(p.name) AS `Número d'habitants`, collect(distinct p.name) AS Habitants
+
+	- Hem eliminat els noms duplicats a la llista de noms, tal i com demana l'enunciat, encara 
+	  que els noms dsiguin de persones diferents.
+
+	Per no haver deduplicar noms però tampoc haver d'eliminar el nom de dues persones diferents 
+	que es diguin igual, hem fet el següent:
+
+	MATCH (h:Habitatge)-[:VIU]-(p:Individu)
+	WHERE h.Any_Padro = 1866 AND h.Municipi = "CR" AND p.name <> "nan"
+	RETURN count(p.name) AS `Número d'habitants`, collect(distinct (p.name+ " " + p.surname)) AS Habitants
+
+   Per que el resultat dongui igual que la solució del joc de proves:
+
+	MATCH (h:Habitatge)-[:VIU]-(p:Individu)
+	WHERE h.Any_Padro = 1866 AND h.Municipi = "CR" AND p.surname <> "nan"
+	RETURN count(p.surname) AS `Número d'habitants`, collect(distinct p.surname) AS Habitants
+
+
+2) Dels padrons de Sant Feliu de Llobregat (SFLL) d'abans de l'any 1840 (no inclòs), retorna la 
+   població, l'any del padró i la llista d'identificadors dels habitatges de cada padró. Ordena els
+   resultats per l'any de padró.
+
+	MATCH (h:Habitatge)
+	WHERE h.Any_Padro < 1840 AND h.Municipi = "SFLL" 
+	RETURN h.Municipi AS `Població`, h.Any_Padro As `Any del padró`, collect(h.Id_Llar) AS `Identificador de l'habitatge`
+	ORDER BY `Identificador de l'habitatge`
+
+   Per que el resultat dongui igual que la solució del joc de proves:
+
+	MATCH (h:Habitatge)
+	WHERE h.Any_Padro < 1840 AND h.Municipi = "SFLL" 
+	RETURN h.Any_Padro As `Any del padró`, collect(h.Id_Llar) AS `Identificador de l'habitatge`
+	ORDER BY `Identificador de l'habitatge`
+
+
+3) Retorna el nom de les persones que vivien al mateix habitatge que "rafel marti" (no té segon 
+   cognom) segons el padró de 1838 de Sant Feliu de Llobregat (SFLL).
+   Retorna la informació en mode graf i mode llista.
+
+   Resultat com a taula:
+
+	MATCH (p1:Individu)-[:VIU]-(h:Habitatge)-[:VIU]-(p2:Individu)
+	WHERE p1.name = "rafel" AND p1.surname = "marti" AND h.Any_Padro = 1838 AND h.Municipi = "SFLL"
+	RETURN collect(p2.name)
+
+   Resultat com a graph:
+
+	MATCH path = (p1:Individu)-[:VIU]-(h:Habitatge)-[:VIU]-(p2:Individu)
+	WHERE p1.name = "rafel" AND p1.surname = "marti" AND h.Any_Padro = 1838 AND h.Municipi = "SFLL"
+	RETURN path
+
+
