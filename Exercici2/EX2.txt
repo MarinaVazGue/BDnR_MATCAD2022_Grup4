@@ -68,17 +68,28 @@
 5) Mostra totes les persones relacionades amb "antonio farran". Mostra la informació en forma de taula: 
    el nom, cognom1, cognom2, i tipus de relació.
    
-   Resultat com a taula:
-   
 	MATCH (p1:Individu)-[r]->(p2:Individu)
 	WHERE p1.name= "antonio" AND p1.surname = "farran"
 	RETURN p2.name AS nom, p2.surname AS cognom1, p2.second_surname AS cognom2,
 	type(r) AS tipus_relacio	
 	
 6) Llisteu totes les relacions familiars que hi ha.
-
-   Resultat com a taula:
    
    	MATCH (:Individu)-[r:FAMILIA]-(:Individu)
 	WHERE NOT r.relacio_harmonitzada = "null"
 	RETURN collect(DISTINCT r.relacio_harmonitzada) AS relacions_familiars
+
+9) Mitja de fills a Sant Feliu del Llobregat l’any 1881 per família. Mostreu el total de
+fills, el nombre d’habitatges i la mitja.
+
+	MATCH (h: Habitatge{Municipi:"SFLL", Any_Padro:1881})-[:VIU]-(p1:Individu)<-[f:FAMILIA]-(p2:Individu)
+	WHERE f.relacio_harmonitzada = "fill" OR f.relacio_harmonitzada = "filla" OR f.relacio_harmonitzada = "hijo" OR f.relacio_harmonitzada = "hija"
+	RETURN count(distinct(h)) AS num_llars, count((p2.Id)) as total_fills, toFloat(count(distinct(p1.Id)))/count(distinct(h)) as mitja
+
+10) Per cada any que hi ha a la base de dades, quin és el carrer amb menys habitants de
+Sant Feliu de Llobregat?
+
+	MATCH (p:Individu)-[:VIU]-(h:Habitatge{Municipi: "SFLL"})
+	WITH count(DISTINCT(p)) AS pers, h.Any_Padro AS any_padro, h.Carrer AS carrer
+	WITH min([pers, carrer]) AS lst, any_padro
+	RETURN any_padro, lst[1] AS carrer, lst[0] AS num_habitants
