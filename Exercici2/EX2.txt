@@ -55,4 +55,30 @@
 	WHERE p1.name = "rafel" AND p1.surname = "marti" AND h.Any_Padro = 1838 AND h.Municipi = "SFLL"
 	RETURN path
 
+4) Retorna totes les aparicions de "Miguel ballester". Fes servir la relació SAME_AS per poder retornar 
+   totes les instancies, independentment de si hi ha variacions lèxiques (ex. diferents formes d'escriure 
+   el seu nom/cognoms). Mostra la informació en forma de subgraf.
 
+   Resultat (la imatge del subgraf es troba a l'informe):
+   
+   	MATCH (p1:Individu{})-[:SAME_AS]->(p2:Individu)
+	WHERE toLower(p1.name) STARTS WITH "mi" AND toLower(p1.surname) STARTS WITH "ballest"
+	RETURN p1,p2
+
+5) Mostra totes les persones relacionades amb "antonio farran". Mostra la informació en forma de taula: 
+   el nom, cognom1, cognom2, i tipus de relació.
+   
+   Resultat com a taula:
+   
+	MATCH (p1:Individu)-[r]->(p2:Individu)
+	WHERE p1.name= "antonio" AND p1.surname = "farran"
+	RETURN p2.name AS nom, p2.surname AS cognom1, p2.second_surname AS cognom2,
+	type(r) AS tipus_relacio	
+	
+6) Llisteu totes les relacions familiars que hi ha.
+
+   Resultat com a taula:
+   
+   	MATCH (:Individu)-[r:FAMILIA]-(:Individu)
+	WHERE NOT r.relacio_harmonitzada = "null"
+	RETURN collect(DISTINCT r.relacio_harmonitzada) AS relacions_familiars
