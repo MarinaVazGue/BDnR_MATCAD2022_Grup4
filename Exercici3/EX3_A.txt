@@ -20,3 +20,18 @@
 	MATCH (n)--(h:Habitatge)
 	WHERE id(n) IN nodes
 	RETURN n,h
+	
+	
+(iii)  Número de relacions (Individu)--(Habitatge) per cada municipi i any de padró.
+
+	call gds.graph.project.cypher('graf_num_relacions',
+	'MATCH (p) RETURN id(p) AS id',
+	'MATCH (p1:Individu)--(h:Habitatge) RETURN h.Id_Llar AS source, id(p1) AS target, "relacio" as type, count(*) AS weight')
+
+	CALL gds.wcc.stream('graf_num_relacions')
+	YIELD componentId, nodeId
+	WITH componentId, size(collect(nodeId)) AS mida, collect(nodeId) AS nodes
+	MATCH (n)
+	WHERE id(n) IN nodes
+	RETURN n.Municipi AS municipi, n.Any_Padro AS any_padro, COUNT(*) AS num_relacions 
+	ORDER BY any_padro
