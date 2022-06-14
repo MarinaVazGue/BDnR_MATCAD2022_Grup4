@@ -1,0 +1,11 @@
+APARTAT A
+(i) Taula agrupant els resultats segons la mida de la cc.
+
+	call gds.graph.project.cypher('graf_num_families',
+	'MATCH (p:Individu) RETURN id(p) AS id',
+	'MATCH (p1:Individu)-[f:FAMILIA{relacio_harmonitzada:"jefe"}]-(p1)-[:FAMILIA]-(p2:Individu) WHERE f.relacio_harmonitzada="jefe" RETURN id(p1) AS source, id(p2) AS target, "familiars" as type, count(*) AS weight')
+
+	CALL gds.wcc.stream('graf_num_families')
+	YIELD componentId, nodeId
+	RETURN componentId, size(collect(nodeId)) AS mida, collect(nodeId) AS nodes
+	ORDER BY mida DESC LIMIT 3
