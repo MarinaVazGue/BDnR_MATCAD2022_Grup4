@@ -82,9 +82,17 @@
 9) Mitja de fills a Sant Feliu del Llobregat l’any 1881 per família. Mostreu el total de
 fills, el nombre d’habitatges i la mitja.
 
-	MATCH (h: Habitatge{Municipi:"SFLL", Any_Padro:1881})-[:VIU]-(p1:Individu)<-[f:FAMILIA]-(p2:Individu)
-	WHERE f.relacio_harmonitzada = "fill" OR f.relacio_harmonitzada = "filla" OR f.relacio_harmonitzada = "hijo" OR f.relacio_harmonitzada = "hija"
-	RETURN count(distinct(h)) AS num_llars, count((p2.Id)) as total_fills, toFloat(count(distinct(p1.Id)))/count(distinct(h)) as mitja
+	MATCH (h: Habitatge{Municipi:"SFLL", Any_Padro:1881})-[:VIU]-(p1:Individu)
+	CALL {
+	    WITH p1
+	    OPTIONAL MATCH (p1)-[f:FAMILIA {relacio_harmonitzada:"fill"}]->(p2:Individu)
+	    RETURN p2
+	UNION
+	    WITH p1
+	    OPTIONAL MATCH (p1)-[f:FAMILIA {relacio_harmonitzada:"filla"}]->(p2:Individu)
+	    RETURN p2
+	}
+	RETURN count(distinct(h)) AS total_llars, count(p2) AS total_fills, toFloat(count(distinct(p1)))/count(distinct(h)) AS mitja
 
 10) Per cada any que hi ha a la base de dades, quin és el carrer amb menys habitants de
 Sant Feliu de Llobregat?
