@@ -1,3 +1,6 @@
+Recull Comandes Exercici 2 - Grup 4
+-----------------------------------
+
 1) Del padró de 1866 de Castellví de Rosanes (CR), retorna el número d'habitants i la llista de noms.
    Elimina duplicats i nan.
 
@@ -55,6 +58,7 @@
 	WHERE p1.name = "rafel" AND p1.surname = "marti" AND h.Any_Padro = 1838 AND h.Municipi = "SFLL"
 	RETURN path
 
+
 4) Retorna totes les aparicions de "Miguel ballester". Fes servir la relació SAME_AS per poder retornar 
    totes les instancies, independentment de si hi ha variacions lèxiques (ex. diferents formes d'escriure 
    el seu nom/cognoms). Mostra la informació en forma de subgraf.
@@ -65,6 +69,7 @@
 	WHERE toLower(p1.name) STARTS WITH "mi" AND toLower(p1.surname) STARTS WITH "ballest"
 	RETURN p1,p2
 
+
 5) Mostra totes les persones relacionades amb "antonio farran". Mostra la informació en forma de taula: 
    el nom, cognom1, cognom2, i tipus de relació.
    
@@ -72,12 +77,15 @@
 	WHERE p1.name= "antonio" AND p1.surname = "farran"
 	RETURN p2.name AS nom, p2.surname AS cognom1, p2.second_surname AS cognom2,
 	type(r) AS tipus_relacio	
-	
+
+
 6) Llisteu totes les relacions familiars que hi ha.
    
    	MATCH (:Individu)-[r:FAMILIA]-(:Individu)
 	WHERE NOT r.relacio_harmonitzada = "null"
 	RETURN collect(DISTINCT r.relacio_harmonitzada) AS relacions_familiars
+
+
 7) Identifiqueu els nodes que representen el mateix habitatge (carrer i numero) al llarg dels anys de Sant Feliu del Llobregat (SFLL). Mostreu el resultat dels habitatges que 
    tingueu totes dues informacions (carrer i numero), el nombre total d’habitatges, el llistat d’anys dels padrons i el llistat de les Ids de les llars. Ordeneu de més a meny
    segons el total d’habitatges i mostreu-ne els 10 primers.
@@ -86,7 +94,6 @@
 	WHERE h.Carrer = h1.Carrer AND h.Numero = h1.Numero 
 	RETURN h.Carrer as Carrer, h.Numero as Número, size(collect(DISTINCT(h.Any_Padro))) as Número_total_habitatges, collect(DISTINCT(h.Any_Padro)) as llistat_anys, collect(DISTINCT(h.Id_Llar)) as llistat_Ids 
 	ORDER BY Número_total_habitatges DESC,h.Carrer LIMIT 10
-
 
 
 8) Mostreu les famílies de Castellví de Rosanes amb més de 3 fills. Mostreu el nom i cognoms del cap de família i el nombre de fills. Ordeneu-les pel nombre de fills fins
@@ -113,6 +120,7 @@ fills, el nombre d’habitatges i la mitja.
 	    RETURN p2
 	}
 	RETURN count(distinct(h)) AS total_llars, count(p2) AS total_fills, toFloat(count(distinct(p1)))/count(distinct(h)) AS mitja
+
 
 10) Per cada any que hi ha a la base de dades, quin és el carrer amb menys habitants de
 Sant Feliu de Llobregat?
