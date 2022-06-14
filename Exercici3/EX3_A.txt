@@ -1,4 +1,3 @@
-APARTAT A
 (i) Taula agrupant els resultats segons la mida de la cc.
 
 	call gds.graph.project.cypher('graf_num_families',
