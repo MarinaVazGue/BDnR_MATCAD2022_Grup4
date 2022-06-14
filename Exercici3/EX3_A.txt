@@ -35,3 +35,17 @@
 	WHERE id(n) IN nodes
 	RETURN n.Municipi AS municipi, n.Any_Padro AS any_padro, COUNT(*) AS num_relacions 
 	ORDER BY any_padro
+	
+	
+(iv) Anàlisi dels caps de familia
+
+	call gds.graph.project.cypher('graf_cap3',
+		'MATCH (p:Individu) RETURN id(p) AS id',
+		'MATCH (p:Individu)-[f:FAMILIA{relacio_harmonitzada:"jefe"}]-(p)-[:VIU]-(h:Habitatge) RETURN id(p) AS source,h.Id_Llar AS target, "cap" as type, count(*) AS weight')
+
+	CALL gds.wcc.stream('graf_cap3')
+	YIELD componentId, nodeId
+	WITH componentId, collect(nodeId) AS nodes, size(collect(nodeId)) AS mida
+	MATCH (n:Individu) WHERE id(n) IN nodes
+	RETURN size(collect(n.name)) AS num_caps, collect(DISTINCT(n.name)) AS caps, n.Year AS any
+	ORDER BY any
