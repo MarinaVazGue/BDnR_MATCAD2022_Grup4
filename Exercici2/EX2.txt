@@ -78,6 +78,26 @@
    	MATCH (:Individu)-[r:FAMILIA]-(:Individu)
 	WHERE NOT r.relacio_harmonitzada = "null"
 	RETURN collect(DISTINCT r.relacio_harmonitzada) AS relacions_familiars
+7) Identifiqueu els nodes que representen el mateix habitatge (carrer i numero) al llarg dels anys de Sant Feliu del Llobregat (SFLL). Mostreu el resultat dels habitatges que 
+   tingueu totes dues informacions (carrer i numero), el nombre total d’habitatges, el llistat d’anys dels padrons i el llistat de les Ids de les llars. Ordeneu de més a meny
+   segons el total d’habitatges i mostreu-ne els 10 primers.
+
+	MATCH (h:Habitatge {Municipi:'SFLL'}), (h1: Habitatge {Municipi: 'SFLL'}) 
+	WHERE h.Carrer = h1.Carrer AND h.Numero = h1.Numero 
+	RETURN h.Carrer as Carrer, h.Numero as Número, size(collect(DISTINCT(h.Any_Padro))) as Número_total_habitatges, collect(DISTINCT(h.Any_Padro)) as llistat_anys, collect(DISTINCT(h.Id_Llar)) as llistat_Ids 
+	ORDER BY Número_total_habitatges DESC,h.Carrer LIMIT 10
+
+
+
+8) Mostreu les famílies de Castellví de Rosanes amb més de 3 fills. Mostreu el nom i cognoms del cap de família i el nombre de fills. Ordeneu-les pel nombre de fills fins
+   a un límit de 20, de més a menys.	
+
+	MATCH (h:Habitatge {Municipi: 'CR'})<-[:VIU]-(p:Individu)-[fcap:FAMILIA]-(p)-[ffill:FAMILIA]->(p2:Individu)
+	WHERE (ffill.relacio_harmonitzada ="fill" OR ffill.relacio_harmonitzada="filla") AND fcap.relacio_harmonitzada="jefe"
+	WITH p, size(collect(distinct p2)) AS numfills
+	WHERE numfills > 3
+	RETURN p.name AS nom, p.surname AS primer_cognom, p.second_surname AS segon_cognom, numfills AS total ORDER BY total DESC LIMIT 20
+
 
 9) Mitja de fills a Sant Feliu del Llobregat l’any 1881 per família. Mostreu el total de
 fills, el nombre d’habitatges i la mitja.
