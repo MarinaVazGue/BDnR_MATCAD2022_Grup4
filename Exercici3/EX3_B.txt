@@ -1,0 +1,22 @@
+Relació MATEIX_HAB
+----------------------
+MATCH (h1:Habitatge), (h2:Habitatge)
+WHERE NOT h2.Carrer = "null" AND NOT h2.Numero = 'null' AND h1.Carrer = h2.Carrer AND h1.Numero = h2.Numero AND NOT h1.Id_Llar = h2.Id_Llar AND h1.Any_Padro < h2.Any_Padro
+MERGE (h1)<-[:MATEIX_HAB]-(h2)
+RETURN h1, h2
+
+Creació del Graf en Memòria
+----------------------------
+CALL gds.graph.project('3b', ['Individu', 'Habitatge'], ['FAMILIA', 'MATEIX_HAB', 'VIU']) 
+YIELD graphName AS Nom_Graph, nodeProjection, nodeCount AS Nodes, relationshipCount AS Relacions
+
+Càlcul Similitud
+----------------
+CALL gds.nodeSimilarity.write("3b", {similarityCutoff: 0.75, degreeCutoff: 1, writeProperty: "similitud", writeRelationshipType: "SAME_AS"})
+
+Visualitzar Similitud
+--------------------
+MATCH (p1:Individu)-[r:SAME_AS]-(p2:Individu)
+WHERE exists(r.similitud)
+RETURN p1.name AS nom_persona1, p2.name AS nom_persona2, r.similitud AS similitud ORDER BY similitud DESC
+
