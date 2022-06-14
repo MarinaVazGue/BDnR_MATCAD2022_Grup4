@@ -9,16 +9,16 @@ Recull Comandes Exercici 2 - Grup 4
 	RETURN count(p.name) AS `Número d'habitants`, collect(distinct p.name) AS Habitants
 
 	- Hem eliminat els noms duplicats a la llista de noms, tal i com demana l'enunciat, encara 
-	  que els noms dsiguin de persones diferents.
+	  que els noms siguin de persones diferents.
 
-	Per no haver deduplicar noms però tampoc haver d'eliminar el nom de dues persones diferents 
-	que es diguin igual, hem fet el següent:
+	Per no haver de duplicar noms però tampoc haver d'eliminar el nom de dues persones diferents 
+	que s'anomenin igual, hem fet el següent:
 
 	MATCH (h:Habitatge)-[:VIU]-(p:Individu)
 	WHERE h.Any_Padro = 1866 AND h.Municipi = "CR" AND p.name <> "nan"
 	RETURN count(p.name) AS `Número d'habitants`, collect(distinct (p.name+ " " + p.surname)) AS Habitants
 
-   Per que el resultat dongui igual que la solució del joc de proves:
+   Per a que el resultat doni igual que la solució del joc de proves:
 
 	MATCH (h:Habitatge)-[:VIU]-(p:Individu)
 	WHERE h.Any_Padro = 1866 AND h.Municipi = "CR" AND p.surname <> "nan"
@@ -34,7 +34,7 @@ Recull Comandes Exercici 2 - Grup 4
 	RETURN h.Municipi AS `Població`, h.Any_Padro As `Any del padró`, collect(h.Id_Llar) AS `Identificador de l'habitatge`
 	ORDER BY `Identificador de l'habitatge`
 
-   Per que el resultat dongui igual que la solució del joc de proves:
+   Per a que el resultat doni igual que la solució del joc de proves:
 
 	MATCH (h:Habitatge)
 	WHERE h.Any_Padro < 1840 AND h.Municipi = "SFLL" 
@@ -52,7 +52,7 @@ Recull Comandes Exercici 2 - Grup 4
 	WHERE p1.name = "rafel" AND p1.surname = "marti" AND h.Any_Padro = 1838 AND h.Municipi = "SFLL"
 	RETURN collect(p2.name)
 
-   Resultat com a graph:
+   Resultat com a graf:
 
 	MATCH path = (p1:Individu)-[:VIU]-(h:Habitatge)-[:VIU]-(p2:Individu)
 	WHERE p1.name = "rafel" AND p1.surname = "marti" AND h.Any_Padro = 1838 AND h.Municipi = "SFLL"
@@ -86,9 +86,7 @@ Recull Comandes Exercici 2 - Grup 4
 	RETURN collect(DISTINCT r.relacio_harmonitzada) AS relacions_familiars
 
 
-7) Identifiqueu els nodes que representen el mateix habitatge (carrer i numero) al llarg dels anys de Sant Feliu del Llobregat (SFLL). Mostreu el resultat dels habitatges que 
-   tingueu totes dues informacions (carrer i numero), el nombre total d’habitatges, el llistat d’anys dels padrons i el llistat de les Ids de les llars. Ordeneu de més a meny
-   segons el total d’habitatges i mostreu-ne els 10 primers.
+7) Identifiqueu els nodes que representen el mateix habitatge (carrer i numero) al llarg dels anys de Sant Feliu del Llobregat (SFLL). Mostreu el resultat dels habitatges que tingueu totes dues informacions (carrer i numero), el nombre total d’habitatges, el llistat d’anys dels padrons i el llistat de les Ids de les llars. Ordeneu de més a menys segons el total d’habitatges i mostreu-ne els 10 primers.
 
 	MATCH (h:Habitatge {Municipi:'SFLL'}), (h1: Habitatge {Municipi: 'SFLL'}) 
 	WHERE h.Carrer = h1.Carrer AND h.Numero = h1.Numero 
@@ -96,8 +94,7 @@ Recull Comandes Exercici 2 - Grup 4
 	ORDER BY Número_total_habitatges DESC,h.Carrer LIMIT 10
 
 
-8) Mostreu les famílies de Castellví de Rosanes amb més de 3 fills. Mostreu el nom i cognoms del cap de família i el nombre de fills. Ordeneu-les pel nombre de fills fins
-   a un límit de 20, de més a menys.	
+8) Mostreu les famílies de Castellví de Rosanes amb més de 3 fills. Mostreu el nom i cognoms del cap de família i el nombre de fills. Ordeneu-les pel nombre de fills fins a un límit de 20, de més a menys.	
 
 	MATCH (h:Habitatge {Municipi: 'CR'})<-[:VIU]-(p:Individu)-[fcap:FAMILIA]-(p)-[ffill:FAMILIA]->(p2:Individu)
 	WHERE (ffill.relacio_harmonitzada ="fill" OR ffill.relacio_harmonitzada="filla") AND fcap.relacio_harmonitzada="jefe"
