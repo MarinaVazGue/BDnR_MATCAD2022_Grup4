@@ -8,3 +8,15 @@
 	YIELD componentId, nodeId
 	RETURN componentId, size(collect(nodeId)) AS mida, collect(nodeId) AS nodes
 	ORDER BY mida DESC LIMIT 3
+
+
+(ii) Connexions entre nodes amb el graf de l'anterior consulta
+
+	CALL gds.wcc.stream('graf_num_families')
+	YIELD nodeId, componentId
+	WITH componentId, collect(nodeId) AS nodes, size(collect(nodeId)) AS mida
+	ORDER BY mida DESC
+	LIMIT 3
+	MATCH (n)--(h:Habitatge)
+	WHERE id(n) IN nodes
+	RETURN n,h
