@@ -39,11 +39,12 @@
 	
 (iv) Anàlisi dels caps de familia
 
-	call gds.graph.project.cypher('graf_cap3',
-		'MATCH (p:Individu) RETURN id(p) AS id',
-		'MATCH (p:Individu)-[f:FAMILIA{relacio_harmonitzada:"jefe"}]-(p)-[:VIU]-(h:Habitatge) RETURN id(p) AS source,h.Id_Llar AS target, "cap" as type, count(*) AS weight')
+	call gds.graph.project.cypher('graf_cap4',
+	'MATCH (p:Individu) RETURN id(p) AS id',
+	'MATCH (p:Individu)-[f:FAMILIA{relacio_harmonitzada:"jefe"}]-(p)-[:VIU]-(h:Habitatge) WHERE NOT p.surname="nan" AND NOT p.second_surname="nan"RETURN id(p) AS source,h.Id_Llar AS target, "cap" as type, count(*) AS weight')
 
-	CALL gds.wcc.stream('graf_cap3')
+
+	CALL gds.wcc.stream('graf_cap4')
 	YIELD componentId, nodeId
 	WITH componentId, collect(nodeId) AS nodes, size(collect(nodeId)) AS mida
 	MATCH (n:Individu) WHERE id(n) IN nodes
